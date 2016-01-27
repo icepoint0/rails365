@@ -5,22 +5,32 @@ module ArticleSearchable
     include Elasticsearch::Model
 
     # 定义es的index的名字
+    #
     index_name [Rails.application.engine_name, Rails.env].join('_')
     document_type "article"
 
     # Index configuration and mapping
-    settings index: { number_of_shards: 1 } do
+    #
+    settings index: { number_of_shards: 1, number_of_replicas: 0 } do
       mapping do
-        indexes :title, analyzer: 'ik_max_word'
-        indexes :body, analyzer: 'ik_max_word'
-        indexes :updated_at, type: 'date'
+        indexes :title, type: 'multi_field' do 
+          indexes :title,     analyzer: 'ik_max_word'
+          indexes :tokenized, analyzer: 'simple'
+        end
+        
+        indexes :body, type: 'multi_field' do 
+          indexes :body,      analyzer: 'ik_max_word'
+          indexes :tokenized, analyzer: 'simple'
+        end
 
-        indexes :tags do
-          indexes :name, analyzer: 'ik_max_word'
+        indexes :updated_at, type: 'date'
+        
+        indexes :tags, type: 'nested' do
+          indexes :name, analyzer: 'simple'
         end
 
         indexes :group do
-          indexes :name, analyzer: 'ik_max_word'
+          indexes :name, analyzer: 'simple'
         end
       end
     end
@@ -38,14 +48,15 @@ module ArticleSearchable
     def as_indexed_json(options={})
       hash = self.as_json(
         include: {
-          group: { only: [:name] }
-        }
-      )
-      hash['tags'] = self.tags.map(&:name)
+          group: { only: [:name] },
+          tags:  { only: [:name] }
+        })
+      # hash['tags'] = self.tags.map(&:name)
       hash
     end
 
     def self.search(query, options={})
+
       __set_filters = lambda do |key, f|
         @search_definition[:post_filter][:and] ||= []
         @search_definition[:post_filter][:and]  |= [f]
@@ -55,59 +66,47 @@ module ArticleSearchable
       end
 
       @search_definition = {
-        query: {
-          multi_match: {
-            query: query,
-            fields: ["title^2", "body"],
-          }
-        },
+        query: {},
 
         highlight: {
           pre_tags: ['<em class="label label-highlight">'],
           post_tags: ['</em>'],
-          fileds: {
+          fields: {
             title:    { number_of_fragments: 0 },
-            body:     { number_of_fragments: 0 }
-            # "tags.name" => { number_of_fragments: 0 },
-            # "group.name" => { number_of_fragments: 0 }
+            body:     { fragment_size: 50 }
           }
         },
 
         post_filter: {},
 
-        aggregations: {
-          group: {
-            filter: { bool: { must: [ macth_all: {} ] } },
-            aggregations: { group: { terms: { field: 'group.name' } } }
-          },
-          tags: {
-            filter: { bool: { must: [ macth_all: {} ] } },
-            aggregations: { tags: { terms: { field: 'tags.name' } } }
-          }
-        }
+        # aggregations: {
+        #   group: {
+        #     filter: { bool: { must: [ macth_all: {} ] } },
+        #     aggregations: { group: { terms: { field: 'group.name' } } }
+        #   },
+        #   tags: {
+        #     filter: { bool: { must: [ macth_all: {} ] } },
+        #     aggregations: { tags: { terms: { field: 'tags.name' } } }
+        #   }
+        # }
       }
 
-      if query.blank?
+      unless query.blank?
+        @search_definition[:query] = {
+          bool: {
+            should: [
+              { multi_match:  {
+                  query: query,
+                  fields: ['title^2', 'body', 'tags.name'],
+                  operator: 'and'
+                }
+              }
+            ]
+          }
+        }
+      else
         @search_definition[:query] = { match_all: {} }
       end
-
-      # unless query.blank?
-      #   @search_definition[:query] = {
-      #     bool: {
-      #       should: [
-      #         {
-      #           multi_match: {
-      #             query: query,
-      #             fileds: ['title^2', 'body'],
-      #             oprator: 'and'
-      #           }
-      #         }
-      #       ]
-      #     }
-      #   }
-      # else
-      #   @search_definition[:query] = { match_all: {} }
-      # end
 
       # TODO
       if options[:tag]

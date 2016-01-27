@@ -26,7 +26,6 @@ class ArticlesController < ApplicationController
   end
 
   def search
-    binding.pry
     @articles = Article.search(params[:q]).records
     render action: "index"
   end

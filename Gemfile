@@ -90,5 +90,6 @@ gem 'sinatra', '~> 1.4.6', :require => nil
 gem 'pghero', '~> 1.2.1'
 
 # 搜索
-gem 'elasticsearch-model'
-gem 'elasticsearch-rails'
+gem 'elasticsearch', git: 'git://github.com/elasticsearch/elasticsearch-ruby.git'
+gem 'elasticsearch-model', git: 'git://github.com/elasticsearch/elasticsearch-rails.git'
+gem 'elasticsearch-rails', git: 'git://github.com/elasticsearch/elasticsearch-rails.git'
