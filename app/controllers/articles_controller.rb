@@ -25,6 +25,12 @@ class ArticlesController < ApplicationController
     end
   end
 
+  def search
+    binding.pry
+    @articles = Article.search(params[:q]).records
+    render action: "index"
+  end
+
   private
     def set_article
       @article = Rails.cache.fetch "article:#{params[:id]}" do

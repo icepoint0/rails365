@@ -2,7 +2,12 @@ require 'sidekiq/web'
 Rails.application.routes.draw do
   root to: 'home#index'
 
-  resources :articles, only: [:show, :index]
+  resources :articles, only: [:show, :index] do
+    collection do
+      get :search
+    end
+  end
+  
   resources :groups, only: [:show, :index]
   resources :tags, only: [:index]
 

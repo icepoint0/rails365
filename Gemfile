@@ -4,11 +4,11 @@ else
   source 'https://rubygems.org'
 end
 
-gem 'rails', '4.2.3'
+gem 'rails', '4.2.5'
 gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.1.0'
-gem 'pg', '~> 0.16.0'
+gem 'pg', '~> 0.18.0'
 
 gem 'jquery-rails'
 gem 'jbuilder', '~> 2.0'
@@ -30,10 +30,12 @@ gem 'carrierwave-aliyun', '~> 0.3.5'
 gem 'mini_magick', '~> 4.3.3'
 
 # for deploy
-gem 'mina', require: false
-gem 'unicorn', '~> 4.9.0'
-gem 'mina-unicorn', :require => false
-gem 'mina-sidekiq', require: false
+group :development do
+  gem 'mina', require: false
+  gem 'unicorn', '~> 4.9.0'
+  gem 'mina-unicorn', :require => false
+  gem 'mina-sidekiq', require: false
+end
 
 gem 'kaminari', '~> 0.16.3'
 gem 'kaminari-i18n', '~> 0.3.2'
@@ -86,3 +88,7 @@ end
 
 gem 'sinatra', '~> 1.4.6', :require => nil
 gem 'pghero', '~> 1.2.1'
+
+# 搜索
+gem 'elasticsearch-model'
+gem 'elasticsearch-rails'
