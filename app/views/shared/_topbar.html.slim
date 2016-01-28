@@ -36,9 +36,10 @@ nav.navbar.navbar-inverse
         /    li.divider role="separator"
         /    li
         /      a href="#"  One more separated link
-      = form_tag "/articles", method: "get", class: "navbar-form navbar-left", role: "search"
+      = form_tag "/articles/search", method: "get", class: "navbar-form navbar-left", role: "search"
         .form-group
-          input.form-control placeholder="Search" type="text" name="search" value="#{params[:search].presence}"/
+          input.form-control placeholder="Search" type="text" name="q" value="#{params[:q].presence}"/
+
       - if session[:admin]
         ul.nav.navbar-nav.navbar-right
           /li
@@ -56,6 +57,12 @@ nav.navbar.navbar-inverse
                 a href="/admin/exception_logs" 异常
               li
                 a href="/admin/sites" 友链
+              li
+                a href="/admin/sidekiq_exceptions" sidekiq异常
+              li
+                a href="/sidekiq" sidekiq web
+              li
+                a href="/pghero" pghero
               /li.divider role="separator"
               /li
               /  a href="#"  Separated link

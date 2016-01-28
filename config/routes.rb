@@ -1,7 +1,13 @@
+require 'sidekiq/web'
 Rails.application.routes.draw do
   root to: 'home#index'
 
-  resources :articles, only: [:show, :index]
+  resources :articles, only: [:show, :index] do
+    collection do
+      get :search
+    end
+  end
+  
   resources :groups, only: [:show, :index]
   resources :tags, only: [:index]
 
@@ -15,6 +21,9 @@ Rails.application.routes.draw do
     resources :exception_logs, only: [:show, :destroy, :index] do
       delete :destroy_multiple, on: :collection
     end
+    resources :sidekiq_exceptions, only: [:show, :destroy, :index] do
+      delete :destroy_multiple, on: :collection
+    end
   end
 
   %w(404 422 500).each do |code|
@@ -23,4 +32,10 @@ Rails.application.routes.draw do
 
   patch '/photos', to: "photos#create"
   get 'tags/:tag_id', to: 'articles#index', as: :tag
+
+  Sidekiq::Web.use Rack::Auth::Basic do |username, password|
+    username == ENV["USERNAME"] && password == ENV['PASSWORD']
+  end if Rails.env.production?
+  mount Sidekiq::Web => '/sidekiq'
+  mount PgHero::Engine, at: "pghero"
 end

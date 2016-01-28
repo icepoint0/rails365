@@ -1,4 +1,6 @@
 require "babosa"
+require 'elasticsearch/model'
+
 class Article < ActiveRecord::Base
   include PgSearch
   pg_search_scope :search_by_title_or_body,
@@ -49,4 +51,7 @@ class Article < ActiveRecord::Base
     super.join(", ")
   end
 
+  include ArticleSearchable
 end
+
+# Article.import
