@@ -2,21 +2,21 @@
 lock '3.4.0'
 
 set :application, 'rails365_cap'
-set :repo_url, 'git@github.com:yinsigan/rails365.git'
-set :branch, "master"
-set :deploy_to, "/home/yinsigan/#{fetch(:application)}"
+set :repo_url, 'git@github.com:w-zengtao/rails365.git'
+set :branch, "cap"
+set :deploy_to, "/opt/rails/#{fetch(:application)}"
 set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/application.yml')
 set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'pids', 'tmp/sockets')
 
-set :rbenv_type, :user # or :system, depends on your rbenv setup
-set :rbenv_ruby, '2.2.2'
-
-# in case you want to set ruby version from the file:
-# set :rbenv_ruby, File.read('.ruby-version').strip
+# set :rbenv_type, :user # or :system, depends on your rbenv setup
+# set :rbenv_ruby, '2.2.2'
 #
-set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
-set :rbenv_map_bins, %w{rake gem bundle ruby rails sidekiq sidekiqctl}
-set :rbenv_roles, :all # default value
+# # in case you want to set ruby version from the file:
+# # set :rbenv_ruby, File.read('.ruby-version').strip
+# #
+# set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
+# set :rbenv_map_bins, %w{rake gem bundle ruby rails sidekiq sidekiqctl}
+# set :rbenv_roles, :all # default value
 
 set :bundle_flags, ''
 
