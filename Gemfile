@@ -82,7 +82,7 @@ end
 
 group :development do
   gem 'capistrano', '~> 3.4.0'
-  gem 'capistrano-rbenv', '~> 2.0.3'
+  # gem 'capistrano-rbenv', '~> 2.0.3'
   gem 'capistrano-bundler', '~> 1.1.4'
   gem 'capistrano-rails', '~> 1.1.3'
   gem 'capistrano3-unicorn', '~> 0.2.1'
