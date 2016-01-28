@@ -2,7 +2,7 @@
 lock '3.4.0'
 
 set :application, 'rails365_cap'
-set :repo_url, 'git@github.com:w-zengtao/rails365.git'
+set :repo_url, 'https://github.com/w-zengtao/rails365.git'
 set :branch, "cap"
 set :deploy_to, "/opt/rails/#{fetch(:application)}"
 set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/application.yml')
